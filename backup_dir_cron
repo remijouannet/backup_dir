@@ -5,10 +5,12 @@ rotate() {
 	local maxbytes=$2
 	local rotate=$3
 
+	if [ $(du -sb $LOG_FILE) > $maxbytes ]
+	then
+		gunz
 
 
 }
-
 
 if [ -f ./backup_dir.ini ]	
 then
