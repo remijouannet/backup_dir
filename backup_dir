@@ -47,10 +47,11 @@ backup() {
 	
 	[ -d $dir_backup ] || check mkdir $dir_backup
 	
-	echo $dir_backup/$(basename $dir)'_'$(date +"$DATE_FORMAT_BACKUP")'.tar.gz'
-	
-	check tar cvzf $dir_backup/$(basename $dir)'_'$(date +"$DATE_FORMAT_BACKUP")'.tar.gz' $dir
+	check tar cvzf \
+	$dir_backup/$(basename $dir)'_'$(date +"$DATE_FORMAT_BACKUP")'.tar.gz' $dir
+
 	chmod 600 $dir_backup/$(basename $dir)'_'$(date +"$DATE_FORMAT_BACKUP")'.tar.gz'
+
 	rotate $dir_backup $rotate	
 }
 
@@ -63,7 +64,8 @@ elif [ -f /etc/backup_dir/backup_dir.ini ]
 then
         . /etc/backup_dir/backup_dir.ini
 else
-	echo $(date +"$DATE_FORMAT_LOG")" could not find /etc/backup_dir/backup_dir.ini or backup_dir.ini"
+	echo $(date +"$DATE_FORMAT_LOG")\
+		" could not find /etc/backup_dir/backup_dir.ini or backup_dir.ini"
 	exit 1
 fi
 
@@ -98,21 +100,26 @@ CURRENT_DOM=$(date +'%d' | sed -e 's/^0//g')
 
 ROTATE_WEEKLY=$(datediff "now" "-$ROTATE_WEEKLY week")
 ROTATE_MONTHLY=$(datediff "now" "-$ROTATE_MONTHLY month")
+
 [ ! -z "$OPTS_GREP" ] || OPTS_GREP="."
+
 echo test > /dev/null | grep $OPTS_GREP || OPTS_GREP="."
 
-check find $DIR -type d | grep $OPTS_GREP |
+check find $DIR -maxdepth 1 -type d | grep $OPTS_GREP |
 while read dir
 do
 	if [ $DAILY = true ]
 	then
-		[ $(contains $CURRENT_DOW ${DAYS_DAILY[@]};echo $?) = 1 ] || backup $dir "daily" $ROTATE_DAILY;
+		[ $(contains $CURRENT_DOW ${DAYS_DAILY[@]};echo $?) = 1 ] || \
+			backup $dir "daily" $ROTATE_DAILY;
 	elif [ $WEEKLY = true ]
 	then
-		[ $CURRENT_DOW != $DAY_WEEKLY ] || backup $dir "weekly" $ROTATE_WEEKLY;
+		[ $CURRENT_DOW != $DAY_WEEKLY ] || \
+			 backup $dir "weekly" $ROTATE_WEEKLY;
 	elif [ $MONTHLY = true ]
 	then
-		[ $CURRENT_DOM != $DAY_MONTHLY ] || backup $dir "monthly" $ROTATE_MONTHLY;
+		[ $CURRENT_DOM != $DAY_MONTHLY ] || \
+			 backup $dir "monthly" $ROTATE_MONTHLY;
 	fi
 done;
 

@@ -1,0 +1,44 @@
+#!/bin/bash
+
+rotate() {
+	local log_file=$1
+	local maxbytes=$2
+	local rotate=$3
+
+
+
+}
+
+
+if [ -f ./backup_dir.ini ]	
+then
+	. ./backup_dir.ini
+elif [ -f /etc/backup_dir/backup_dir.ini ]
+then
+        . /etc/backup_dir/backup_dir.ini
+else
+	logger "backup_dir could not find /etc/backup_dir/backup_dir.ini \
+			or backup_dir.ini"
+	exit 1
+fi
+
+logger "backup_dir create $(dirname LOG_FILE)"
+[ -d $(dirname $LOG_FILE) ] || \
+	logger "backup_dir $(mkdir -p $(dirname $LOG_FILE))" && exit 1
+
+[ -w $LOG_FILE ] || logger "can't write to $LOG_FILE" && exit 1
+
+if [ -f ./backup_dir ]	
+then
+	. EXEC="./backup_dir"
+elif [ -f /usr/sbin/backup_dir ]
+then
+        . EXEC="/usr/sbin/backup_dir"
+else
+	logger "backup_dir could not find /usr/sbin/backup_dir or backup_dir"
+	exit 1
+fi
+
+ $EXEC >> $LOG_FILE
+
+
