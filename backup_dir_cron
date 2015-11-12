@@ -7,9 +7,23 @@ rotate() {
 
 	if [ $(du -sb $LOG_FILE) > $maxbytes ]
 	then
-		gunz
-
-
+		if [ -f $log_file.$rotate.gz ]
+		then
+	    		rm $log_file.$rotate.gz
+  		fi
+	
+		i=1
+		while [[ $i -le $rotate ]]
+		do
+			if [ -f $log_file.$i.gz ]
+			then
+				mv $log_file.$i.gz $log_file.$(($i+1)).gz
+    			fi
+			let i=$i+1
+  		done
+	
+		gzip -c $LOG_FILE > $LOG_FILE"."1.gz
+	fi
 }
 
 if [ -f ./backup_dir.ini ]	
@@ -41,6 +55,7 @@ else
 	exit 1
 fi
 
- $EXEC >> $LOG_FILE
+$EXEC >> $LOG_FILE || \
+	mail -s "[$HOSTNAME] backup_dir failed" -a $LOG_FILE -r $FROM_MAIL $MAIL && exit 1
 
-
+exit 0
