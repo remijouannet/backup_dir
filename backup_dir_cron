@@ -5,9 +5,9 @@ rotate() {
 	local maxbytes=$2
 	local rotate=$3
 
-	if [ $(du -sb $LOG_FILE) > $maxbytes ]
+	if [[ $(du -sb $LOG_FILE) -ge $maxbytes ]]
 	then
-		if [ -f $log_file.$rotate.gz ]
+		if [[ -f $log_file.$rotate.gz ]]
 		then
 	    		rm $log_file.$rotate.gz
   		fi
@@ -15,7 +15,7 @@ rotate() {
 		i=1
 		while [[ $i -le $rotate ]]
 		do
-			if [ -f $log_file.$i.gz ]
+			if [[ -f $log_file.$i.gz ]]
 			then
 				mv $log_file.$i.gz $log_file.$(($i+1)).gz
     			fi
@@ -26,15 +26,21 @@ rotate() {
 	fi
 }
 
-if [ -f ./backup_dir.ini ]	
+if [ -f $1 ]	
 then
+	CONF_FILE=$1
+	. $1
+elif [ -f ./backup_dir.ini ]	
+then	
+	CONF_FILE=./backup_dir.ini
 	. ./backup_dir.ini
 elif [ -f /etc/backup_dir/backup_dir.ini ]
 then
+	CONF_FILE=/etc/backup_dir/backup_dir.ini
         . /etc/backup_dir/backup_dir.ini
 else
 	logger "backup_dir could not find /etc/backup_dir/backup_dir.ini \
-			or backup_dir.ini"
+			or backup_dir.ini or $1"
 	exit 1
 fi
 
@@ -46,16 +52,18 @@ logger "backup_dir create $(dirname LOG_FILE)"
 
 if [ -f ./backup_dir ]	
 then
-	. EXEC="./backup_dir"
+	EXEC="./backup_dir"
 elif [ -f /usr/sbin/backup_dir ]
 then
-        . EXEC="/usr/sbin/backup_dir"
+        EXEC="/usr/sbin/backup_dir"
 else
 	logger "backup_dir could not find /usr/sbin/backup_dir or backup_dir"
 	exit 1
 fi
 
-$EXEC >> $LOG_FILE || \
-	mail -s "[$HOSTNAME] backup_dir failed" -a $LOG_FILE -r $FROM_MAIL $MAIL && exit 1
+$EXEC $CONF_FILE >> $LOG_FILE
+	#mail -s "[$HOSTNAME] backup_dir failed" -a $LOG_FILE -r $FROM_MAIL $MAIL && exit 1
+
+rotate $LOG_FILE $LOG_FILE_MAXBYTES $LOG_FILE_ROTATE
 
 exit 0

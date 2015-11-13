@@ -47,7 +47,7 @@ backup() {
 	
 	[ -d $dir_backup ] || check mkdir $dir_backup
 	
-	check tar cvzf \
+	check tar czf \
 	$dir_backup/$(basename $dir)'_'$(date +"$DATE_FORMAT_BACKUP")'.tar.gz' $dir
 
 	chmod 600 $dir_backup/$(basename $dir)'_'$(date +"$DATE_FORMAT_BACKUP")'.tar.gz'
@@ -57,7 +57,12 @@ backup() {
 
 
 #########################BEGINNGING#########################
-if [ -f ./backup_dir.ini ]	
+
+
+if [ -f $1 ]	
+then
+	. $1
+elif [ -f ./backup_dir.ini ]	
 then
 	. ./backup_dir.ini
 elif [ -f /etc/backup_dir/backup_dir.ini ]
@@ -65,7 +70,7 @@ then
         . /etc/backup_dir/backup_dir.ini
 else
 	echo $(date +"$DATE_FORMAT_LOG")\
-		" could not find /etc/backup_dir/backup_dir.ini or backup_dir.ini"
+		" could not find /etc/backup_dir/backup_dir.ini or backup_dir.ini or $1"
 	exit 1
 fi
 
@@ -105,7 +110,7 @@ ROTATE_MONTHLY=$(datediff "now" "-$ROTATE_MONTHLY month")
 
 echo test > /dev/null | grep $OPTS_GREP || OPTS_GREP="."
 
-check find $DIR -maxdepth 1 -type d | grep $OPTS_GREP |
+check find $DIR -mindepth 1 -maxdepth 1 -type d | grep $OPTS_GREP |
 while read dir
 do
 	if [ $DAILY = true ]
