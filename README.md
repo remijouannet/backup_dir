@@ -81,16 +81,16 @@ postbackup(){
 
 ```
 
-* launch the script
+* launch the script, **launch the script as root**
 
 ```
-/usr/sbin/backup_dir_cron
+sudo /usr/sbin/backup_dir_cron
 ```
 
 mutliple config files
 --
 
-You can have mutliple config files, if you have let's say a conf file "/etc/backup_dir/backup_dir2.ini"
+You can have mutliple config files, if you have let's say a conf file named "/etc/backup_dir/backup_dir2.ini"
 you can use it with the following command
 
 ```
