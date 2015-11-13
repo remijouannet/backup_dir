@@ -1,7 +1,7 @@
 backup_dir
 ==
 
-This bash program has been made to backup folders, the using is simple
+This bash program has been made to backup directories, the using is simple
 
 * clone the repo
 
