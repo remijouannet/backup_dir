@@ -42,15 +42,16 @@ backup() {
 	local type_backup=$2
 	local rotate=$3
 	
-	dir_backup=$DIR_BACKUP/$type_backup/$(basename $dir)
+	local dir_backup=$DIR_BACKUP/$type_backup/$(basename $dir)
+	local tar_backup=$dir_backup/$(basename $dir)'_'$(date +"$DATE_FORMAT_BACKUP")'.tar.gz'
+
 	echo $(date +"$DATE_FORMAT_LOG")" backup $dir $type_backup"
 	
 	[ -d $dir_backup ] || check mkdir $dir_backup
 	
-	check tar czf \
-	$dir_backup/$(basename $dir)'_'$(date +"$DATE_FORMAT_BACKUP")'.tar.gz' $dir
+	check tar czf $tar_backup $dir
 
-	chmod 600 $dir_backup/$(basename $dir)'_'$(date +"$DATE_FORMAT_BACKUP")'.tar.gz'
+	chmod 600 $tar_backup
 
 	rotate $dir_backup $rotate	
 }
