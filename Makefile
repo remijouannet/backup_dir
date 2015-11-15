@@ -12,7 +12,7 @@ install:
 ifeq ($(USER),root)
 	install -m 0700 -v -g 0 -o 0 "$(PROGRAM)" "$(BINDIR)/$(PROGRAM)"
 	@echo ""	
-	install -m 0700 -v -g 0 -o 0 "$(PROGRAM)" "$(BINDIR)/$(PROGRAM)_cron"
+	install -m 0700 -v -g 0 -o 0 "$(PROGRAM)_cron" "$(BINDIR)/$(PROGRAM)_cron"
 	@echo ""	
 	mkdir -p $(ETCDIR)
 	@echo ""	
