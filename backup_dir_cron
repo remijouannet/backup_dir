@@ -73,7 +73,7 @@ logger "backup_dir launch $EXEC $CONF_FILE"
 $EXEC $CONF_FILE >> $LOG_FILE  2>&1;
 if [ $? -ne 0 ]
 then
-	echo "log" | mail -s "[$HOSTNAME] backup_dir failed" -a $LOG_FILE $FROM_MAIL $MAIL
+	echo "log" | mail -s "[$HOSTNAME] backup_dir failed" -a $LOG_FILE -r $FROM_MAIL $MAIL
 fi
 
 exit 0
