@@ -114,18 +114,15 @@ echo test > /dev/null | grep $OPTS_GREP || OPTS_GREP="."
 check find $DIR -mindepth 1 -maxdepth 1 -type d | grep $OPTS_GREP |
 while read dir
 do
-	if [ $DAILY = true ]
+	if [ $DAILY = true ] && [ $(contains $CURRENT_DOW ${DAYS_DAILY[@]};echo $?) -eq 0 ]
 	then
-		[ $(contains $CURRENT_DOW ${DAYS_DAILY[@]};echo $?) = 1 ] || \
-			backup $dir "daily" $ROTATE_DAILY;
-	elif [ $WEEKLY = true ]
+		backup $dir "daily" $ROTATE_DAILY;
+	elif [ $WEEKLY = true ] && [ $CURRENT_DOW -eq $DAY_WEEKLY ]
 	then
-		[ $CURRENT_DOW != $DAY_WEEKLY ] || \
-			 backup $dir "weekly" $ROTATE_WEEKLY;
-	elif [ $MONTHLY = true ]
+		backup $dir "weekly" $ROTATE_WEEKLY;
+	elif [ $MONTHLY = true ] && [ $CURRENT_DOM -eq $DAY_MONTHLY ]
 	then
-		[ $CURRENT_DOM != $DAY_MONTHLY ] || \
-			 backup $dir "monthly" $ROTATE_MONTHLY;
+		backup $dir "monthly" $ROTATE_MONTHLY;
 	fi
 done;
 
